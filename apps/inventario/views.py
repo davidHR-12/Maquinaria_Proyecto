@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView
+from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from django.contrib import messages
 from .models import Categoria, Maquinaria, Unidad
 from .forms import CategoriaForm, MaquinariaIntegralForm
@@ -28,14 +28,46 @@ class CategoriaCrearView(LoginRequiredMixin, InventarioAdminRequiredMixin, Creat
 
 # --- Vistas de Maquinaria / Unidad Física ---
 class MaquinariaListaView(LoginRequiredMixin, ListView):
-    # Ya no listamos Maquinaria pura, listamos las Unidades físicas para ver el número de serie y el estado
     model = Unidad
     template_name = 'inventario/maquinaria_lista.html' 
     context_object_name = 'unidades'
     
     def get_queryset(self):
         # Traemos la unidad junto con los datos de su maquinaria base
-        return Unidad.objects.select_related('maquinaria__categoria').all()
+        queryset = Unidad.objects.select_related('maquinaria__categoria').all()
+        
+        # Capturar parámetros de la URL (GET)
+        q = self.request.GET.get('q', '').strip()
+        categoria_id = self.request.GET.get('categoria', '')
+        estado = self.request.GET.get('estado', '')
+
+        # Filtrar por texto (código, nombre del equipo, número de serie o marca)
+        if q:
+            queryset = queryset.filter(
+                models.Q(maquinaria__codigo__icontains=q) |
+                models.Q(maquinaria__nombre__icontains=q) |
+                models.Q(numero_serie__icontains=q) |
+                models.Q(maquinaria__marca__icontains=q)
+            )
+        
+        # Filtrar por categoría
+        if categoria_id:
+            queryset = queryset.filter(maquinaria__categoria_id=categoria_id)
+            
+        # Filtrar por estado
+        if estado:
+            queryset = queryset.filter(estado=estado)
+            
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Pasamos las categorías y los estados disponibles al template para poblar los selectores
+        context['categorias'] = Categoria.objects.all()
+        context['estados'] = Unidad.ESTADOS
+        # Mantener los valores actuales en el contexto para rellenar el formulario de filtros
+        context['request_get'] = self.request.GET
+        return context
 
 class MaquinariaCrearView(LoginRequiredMixin, InventarioAdminRequiredMixin, CreateView):
     form_class = MaquinariaIntegralForm
@@ -71,3 +103,13 @@ class MaquinariaEditarView(LoginRequiredMixin, InventarioAdminRequiredMixin, Upd
     def form_valid(self, form):
         messages.success(self.request, 'Los datos de la maquinaria se actualizaron correctamente.')
         return super().form_valid(form)
+
+class MaquinariaDetalleView(LoginRequiredMixin, DetailView):
+    model = Unidad
+    template_name = 'inventario/maquinaria_detalle.html'
+    context_object_name = 'unidad'
+    pk_url_kwarg = 'unidad_id' # Coincide con el <int:unidad_id> de la URL
+
+    def get_object(self, queryset=None):
+        # Optimizamos trayendo la unidad, su maquinaria y la categoría en una sola consulta
+        return Unidad.objects.select_related('maquinaria__categoria').get(pk=self.kwargs.get(self.pk_url_kwarg))

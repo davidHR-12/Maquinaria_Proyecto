@@ -25,4 +25,6 @@ urlpatterns = [
     # Rutas de la app cuentas (prefijo /cuentas/ o directamente en la raíz)
     path('auth/', include('apps.cuentas.urls')),
     path('inventario/', include('apps.inventario.urls')),
+    path('alquileres/', include('apps.alquileres.urls')),
+    path('mantenimiento/', include('apps.mantenimiento.urls')),
 ]

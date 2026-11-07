@@ -1,0 +1,113 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Historial de Mantenimiento - {{ unidad.numero_serie }}{% endblock %}
+{% block page_name %}Historial de Unidad{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <!-- ENCABEZADO Y ACCIONES -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h1 class="h3 fw-bold text-dark mb-0">{{ unidad.maquinaria.nombre }}</h1>
+                <!-- Estado con badge moderno -->
+                {% if unidad.estado == 'Disponible' %}
+                    <span class="badge bg-success-subtle text-success">Disponible</span>
+                {% elif unidad.estado == 'Alquilado' %}
+                    <span class="badge bg-primary-subtle text-primary">Alquilado</span>
+                {% elif unidad.estado == 'Mantenimiento' %}
+                    <span class="badge bg-warning-subtle text-warning">En mantenimiento</span>
+                {% else %}
+                    <span class="badge bg-secondary-subtle text-secondary">{{ unidad.get_estado_display }}</span>
+                {% endif %}
+
+                {% if not unidad.activo or not unidad.maquinaria.activo %}
+                    <span class="badge bg-danger-subtle text-danger">Inactiva</span>
+                {% endif %}
+            </div>
+            <p class="text-secondary mb-0">
+                Código: <strong class="text-dark">{{ unidad.codigo }}</strong> | 
+                N° Serie: <strong class="text-dark">{{ unidad.numero_serie }}</strong> 
+                (Unidad ID: #{{ unidad.pk }})
+            </p>
+        </div>
+        
+        <div class="d-flex gap-2">
+            {% if puede_registrar_mantenimiento and unidad.activo and unidad.maquinaria.activo %}
+                {% if unidad.estado == 'Disponible' or unidad.estado == 'Mantenimiento' %}
+                <a href="{% url 'mantenimiento:mantenimiento_registrar' %}?unidad={{ unidad.pk }}" class="btn btn-warning fw-bold text-dark" style="background-color: var(--mq-amber); border: none;">
+                    <i class="bi bi-tools"></i> Registrar Mantenimiento
+                </a>
+                {% endif %}
+            {% endif %}
+            <a href="{% url 'mantenimiento:mantenimiento_lista' %}" class="btn btn-outline-secondary fw-semibold">
+                <i class="bi bi-arrow-left"></i> Volver a unidades
+            </a>
+        </div>
+    </div>
+
+    <!-- CONTENIDO: TABLA O ESTADO VACÍO -->
+    {% if mantenimientos %}
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase small">
+                        <tr>
+                            <th class="py-3 ps-4">Fecha</th>
+                            <th class="py-3">Tipo</th>
+                            <th class="py-3">Descripción</th>
+                            <th class="py-3">Costo</th>
+                            <th class="py-3 pe-4">Técnico responsable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mantenimiento in mantenimientos %}
+                        <tr>
+                            <td class="ps-4 fw-semibold text-dark">{{ mantenimiento.fecha|date:"d/m/Y" }}</td>
+                            <td>
+                                <span class="badge bg-light text-dark border">{{ mantenimiento.get_tipo_display }}</span>
+                            </td>
+                            <td class="text-secondary">
+                                {{ mantenimiento.descripcion|default:"No especificada (registro anterior)" }}
+                            </td>
+                            <td class="fw-semibold text-dark">${{ mantenimiento.costo|floatformat:2 }}</td>
+                            <td class="pe-4">
+    {% if mantenimiento.tecnico %}
+        {% with full_name=mantenimiento.tecnico.get_full_name username=mantenimiento.tecnico.username %}
+            <div class="fw-semibold text-dark">
+                {% if full_name and full_name|lower != "none" %}
+                    {{ full_name }}
+                {% elif username and username|lower != "none" %}
+                    {{ username }}
+                {% else %}
+                    Usuario del sistema
+                {% endif %}
+            </div>
+            {% if username and username|lower != "none" and full_name and full_name|lower != "none" and full_name != username %}
+                <small class="text-muted">@{{ username }}</small>
+            {% endif %}
+        {% endwith %}
+    {% else %}
+        <span class="text-muted italic">No registrado</span>
+    {% endif %}
+</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- ESTADO VACÍO -->
+    <div class="card border-0 shadow-sm rounded-4 text-center py-5">
+        <div class="card-body">
+            <i class="bi bi-clipboard-x display-5 text-secondary mb-3 d-block"></i>
+            <h4 class="fw-bold text-dark">Sin mantenimientos registrados</h4>
+            <p class="text-secondary mb-0">Esta unidad todavía no tiene actividades de mantenimiento en su historial.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

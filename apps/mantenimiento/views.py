@@ -1,3 +1,84 @@
-from django.shortcuts import render
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.db import DatabaseError
+from django.db.models import Q
+from django.shortcuts import get_object_or_404, redirect, render
 
-# Create your views here.
+from apps.inventario.models import Unidad
+from apps.cuentas.models import permisos_panel
+from .forms import MantenimientoForm
+from .models import Mantenimiento
+
+
+@login_required
+def mantenimiento_lista(request):
+    """Muestra el listado de unidades físicas y su estado actual respecto a mantenimiento."""
+    permisos = permisos_panel(request.user)
+    if not (permisos.get('es_administrador') or permisos.get('es_tecnico')):
+        raise PermissionDenied("Acceso restringido al personal autorizado.")
+
+    unidades = Unidad.objects.select_related('maquinaria__categoria').filter(activo=True, maquinaria__activo=True)
+    consulta = request.GET.get('q', '').strip()
+    
+    if consulta:
+        unidades = unidades.filter(
+            Q(maquinaria__codigo__icontains=consulta)
+            | Q(maquinaria__nombre__icontains=consulta)
+            | Q(numero_serie__icontains=consulta)
+        )
+        
+    return render(request, 'mantenimiento/mantenimiento_lista.html', {
+        'unidades': unidades, 
+        'consulta': consulta,
+        'puede_registrar_mantenimiento': True
+    })
+
+
+@login_required
+def mantenimiento_registrar(request):
+    """Formulario para registrar una nueva orden de mantenimiento correctivo o preventivo."""
+    permisos = permisos_panel(request.user)
+    if not (permisos.get('es_administrador') or permisos.get('es_tecnico')):
+        raise PermissionDenied("Acceso restringido al personal autorizado.")
+
+    unidad_preseleccionada = request.GET.get('unidad')
+    initial_data = {'unidad': unidad_preseleccionada} if unidad_preseleccionada else {}
+
+    if request.method == 'POST':
+        form = MantenimientoForm(request.POST)
+        if form.is_valid():
+            try:
+                mantenimiento = form.save(tecnico=request.user)
+            except ValidationError as error:
+                for msg in error.messages:
+                    form.add_error(None, msg)
+            except DatabaseError:
+                form.add_error(None, 'No se pudo registrar el mantenimiento por un error de base de datos.')
+            else:
+                messages.success(request, 'Mantenimiento registrado con éxito. La unidad ha pasado a estado "En mantenimiento".')
+                return redirect('mantenimiento:mantenimiento_historial', unidad_id=mantenimiento.unidad_id)
+    else:
+        form = MantenimientoForm(initial=initial_data)
+
+    return render(request, 'mantenimiento/mantenimiento_form.html', {
+        'form': form,
+        'nombre_usuario': request.user.get_full_name() or request.user.email
+    })
+
+
+@login_required
+def mantenimiento_historial(request, unidad_id):
+    """Historial completo de intervenciones técnicas realizadas a una unidad física."""
+    permisos = permisos_panel(request.user)
+    if not (permisos.get('es_administrador') or permisos.get('es_tecnico')):
+        raise PermissionDenied("Acceso restringido.")
+
+    unidad = get_object_or_404(Unidad.objects.select_related('maquinaria__categoria'), pk=unidad_id)
+    mantenimientos = unidad.mantenimientos.select_related('tecnico')
+    
+    return render(request, 'mantenimiento/mantenimiento_historial.html', {
+        'unidad': unidad, 
+        'mantenimientos': mantenimientos,
+        'puede_registrar_mantenimiento': True
+    })

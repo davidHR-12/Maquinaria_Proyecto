@@ -1,0 +1,132 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Detalle de Maquinaria{% endblock %}
+{% block page_name %}Detalle de Equipo{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <!-- ENCABEZADO Y BOTONES DE ACCIÓN -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h1 class="h3 fw-bold text-dark mb-0">{{ unidad.maquinaria.nombre }}</h1>
+                <!-- Badge de Estado con colores dinámicos -->
+                {% if unidad.estado == 'Disponible' %}
+                    <span class="badge bg-success-subtle text-success fs-6 px-3">Disponible</span>
+                {% elif unidad.estado == 'Alquilado' %}
+                    <span class="badge bg-primary-subtle text-primary fs-6 px-3">Alquilado</span>
+                {% elif unidad.estado == 'Mantenimiento' %}
+                    <span class="badge bg-warning-subtle text-warning fs-6 px-3">En mantenimiento</span>
+                {% else %}
+                    <span class="badge bg-danger-subtle text-danger fs-6 px-3">{{ unidad.estado }}</span>
+                {% endif %}
+            </div>
+            <p class="text-secondary mb-0">Código: <strong class="text-dark">{{ unidad.maquinaria.codigo }}</strong> | N° Serie: <strong class="text-dark">{{ unidad.numero_serie }}</strong></p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'inventario:maquinaria_lista' %}" class="btn btn-outline-secondary fw-semibold">
+                <i class="bi bi-arrow-left"></i> Volver a la Flota
+            </a>
+            {% if es_administrador or es_tercero %}
+            <a href="{% url 'inventario:maquinaria_editar' unidad.id %}" class="btn btn-warning fw-bold text-dark"
+                style="background-color: var(--mq-amber); border: none;">
+                <i class="bi bi-pencil"></i> Editar Equipo
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- COLUMNA IZQUIERDA: INFORMACIÓN DE LA UNIDAD Y EQUIPO -->
+        <div class="col-lg-8">
+            <!-- Tarjeta 1: Especificaciones Físicas y Operativas -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-header bg-transparent py-3 px-4 border-bottom">
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-info-circle text-primary me-2"></i> Información Operativa</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <span class="text-secondary small d-block">Categoría</span>
+                            <span class="fw-bold text-dark fs-6">
+                                <span class="badge bg-light text-dark border">{{ unidad.maquinaria.categoria.nombre }}</span>
+                            </span>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="text-secondary small d-block">Ubicación Actual</span>
+                            <span class="fw-bold text-dark fs-6">
+                                <i class="bi bi-geo-alt text-danger me-1"></i> {{ unidad.ubicacion_actual|default:"No especificada" }}
+                            </span>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="text-secondary small d-block">Horas de Uso</span>
+                            <span class="fw-bold text-dark fs-6"><i class="bi bi-speedometer2 text-muted me-1"></i> {{ unidad.horas_uso|floatformat:1 }} hrs</span>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="text-secondary small d-block">Año de Fabricación</span>
+                            <span class="fw-bold text-dark fs-6">{{ unidad.anio_fabricacion|default:"N/D" }}</span>
+                        </div>
+                        <div class="col-md-4">
+                            <span class="text-secondary small d-block">Fecha de Adquisición</span>
+                            <span class="fw-bold text-dark fs-6">{{ unidad.fecha_adquisicion|default:"N/D" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarjeta 2: Datos de Marca y Modelo (Maquinaria Base) -->
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent py-3 px-4 border-bottom">
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-gear-wide-connected text-secondary me-2"></i> Especificaciones del Modelo</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <span class="text-secondary small d-block">Marca</span>
+                            <span class="fw-bold text-dark fs-6">{{ unidad.maquinaria.marca|default:"No especificada" }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="text-secondary small d-block">Modelo</span>
+                            <span class="fw-bold text-dark fs-6">{{ unidad.maquinaria.modelo|default:"No especificado" }}</span>
+                        </div>
+                        <div class="col-md-12">
+                            <span class="text-secondary small d-block">Costo de Adquisición Base</span>
+                            <span class="fw-bold text-dark fs-6">${{ unidad.maquinaria.costo_adquisicion|floatformat:2 }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: TARIFAS Y COSTOS -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 bg-light">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-cash-stack text-success me-2"></i> Tarifas y Depósito</h5>
+                    <p class="text-secondary small mb-4">Esquema de cobro configurado para el alquiler de esta maquinaria.</p>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                        <span class="text-secondary">Tarifa Diaria:</span>
+                        <span class="fw-bold text-dark fs-5">${{ unidad.maquinaria.tarifa_diaria|floatformat:2 }}</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                        <span class="text-secondary">Tarifa Semanal:</span>
+                        <span class="fw-bold text-dark fs-5">${{ unidad.maquinaria.tarifa_semanal|floatformat:2 }}</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                        <span class="text-secondary">Tarifa Mensual:</span>
+                        <span class="fw-bold text-dark fs-5">${{ unidad.maquinaria.tarifa_mensual|floatformat:2 }}</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-secondary">Depósito Garantía:</span>
+                        <span class="fw-bold text-success fs-5">${{ unidad.maquinaria.deposito_garantia|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

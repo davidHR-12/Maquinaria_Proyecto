@@ -4,12 +4,12 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import DatabaseError
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
-
+from django.db import DatabaseError, transaction
 from apps.inventario.models import Unidad
 from apps.cuentas.models import permisos_panel
 from .forms import MantenimientoForm
 from .models import Mantenimiento
-
+from django.utils import timezone
 
 @login_required
 def mantenimiento_lista(request):
@@ -82,3 +82,30 @@ def mantenimiento_historial(request, unidad_id):
         'mantenimientos': mantenimientos,
         'puede_registrar_mantenimiento': True
     })
+
+@login_required
+@transaction.atomic
+def mantenimiento_finalizar(request, unidad_id):
+    """Finaliza el estado de mantenimiento de una unidad y la devuelve a 'Disponible'."""
+    permisos = permisos_panel(request.user)
+    if not (permisos.get('es_administrador') or permisos.get('es_tecnico')):
+        raise PermissionDenied("Acceso restringido al personal autorizado.")
+
+    unidad = get_object_or_404(Unidad.objects.select_for_update(), pk=unidad_id)
+
+    if unidad.estado != 'Mantenimiento':
+        messages.error(request, 'Esta unidad no se encuentra en mantenimiento actualmente.')
+        return redirect('mantenimiento:mantenimiento_historial', unidad_id=unidad.pk)
+
+    # Cerrar la última orden de mantenimiento abierta
+    mantenimiento_activo = unidad.mantenimientos.filter(fecha_fin__isnull=True).first()
+    if mantenimiento_activo:
+        mantenimiento_activo.fecha_fin = timezone.localdate()
+        mantenimiento_activo.save(update_fields=['fecha_fin'])
+
+    # Devolver unidad a disponible
+    unidad.estado = 'Disponible'
+    unidad.save(update_fields=['estado'])
+
+    messages.success(request, f'La unidad #{unidad.numero_serie} ha finalizado su mantenimiento y ya se encuentra Disponible.')
+    return redirect('mantenimiento:mantenimiento_historial', unidad_id=unidad.pk)

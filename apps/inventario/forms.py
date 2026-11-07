@@ -1,5 +1,94 @@
 from django import forms
-from .models import Categoria, Maquinaria
+from django.db import transaction
+from django.core.exceptions import ValidationError
+from .models import Categoria, Maquinaria, Unidad
+
+class MaquinariaIntegralForm(forms.ModelForm):
+    # --- Campos inyectados para la Unidad Física ---
+    numero_serie = forms.CharField(label='Número de serie', max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    estado = forms.ChoiceField(label='Estado', choices=Unidad.ESTADOS, initial='Disponible', widget=forms.Select(attrs={'class': 'form-select'}))
+    horas_uso = forms.DecimalField(label='Horas de uso', max_digits=10, decimal_places=1, initial=0, widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}))
+    fecha_adquisicion = forms.DateField(label='Fecha de adquisición', required=False, widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
+    anio_fabricacion = forms.IntegerField(label='Año de fabricación', required=False, widget=forms.NumberInput(attrs={'class': 'form-control', 'min': '1980'}))
+    ubicacion_actual = forms.CharField(label='Ubicación actual', max_length=200, widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = Maquinaria
+        fields = [
+            'categoria', 'codigo', 'nombre', 'marca', 'modelo',
+            'costo_adquisicion', 'tarifa_diaria', 'tarifa_semanal',
+            'tarifa_mensual', 'deposito_garantia'
+        ]
+        widgets = {
+            'categoria': forms.Select(attrs={'class': 'form-select'}),
+            'codigo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej. GRU-001'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'marca': forms.TextInput(attrs={'class': 'form-control'}),
+            'modelo': forms.TextInput(attrs={'class': 'form-control'}),
+            'costo_adquisicion': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'tarifa_diaria': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'tarifa_semanal': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'tarifa_mensual': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'deposito_garantia': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        # Extraemos la instancia de 'unidad' si estamos en modo edición
+        self.unidad_instancia = kwargs.pop('unidad', None)
+        
+        # Si pasaron una unidad, la instancia de Maquinaria base debe inyectarse en el ModelForm
+        if self.unidad_instancia:
+            kwargs['instance'] = self.unidad_instancia.maquinaria
+            
+        super().__init__(*args, **kwargs)
+
+        # Precargar los datos de la unidad si estamos editando
+        if self.unidad_instancia:
+            self.fields['numero_serie'].initial = self.unidad_instancia.numero_serie
+            self.fields['estado'].initial = self.unidad_instancia.estado
+            self.fields['horas_uso'].initial = self.unidad_instancia.horas_uso
+            self.fields['fecha_adquisicion'].initial = self.unidad_instancia.fecha_adquisicion
+            self.fields['anio_fabricacion'].initial = self.unidad_instancia.anio_fabricacion
+            self.fields['ubicacion_actual'].initial = self.unidad_instancia.ubicacion_actual
+
+    def clean_numero_serie(self):
+        numero_serie = self.cleaned_data['numero_serie']
+        coincidencias = Unidad.objects.filter(numero_serie__iexact=numero_serie)
+        
+        if self.unidad_instancia:
+            coincidencias = coincidencias.exclude(pk=self.unidad_instancia.pk)
+            
+        if coincidencias.exists():
+            raise ValidationError('Ya existe otra unidad registrada con este número de serie.')
+        return numero_serie
+
+    @transaction.atomic
+    def save(self, commit=True):
+        # Guardar la Maquinaria (ModelForm nativo)
+        maquinaria = super().save(commit=commit)
+        
+        if commit:
+            # Crear o actualizar la Unidad física
+            if self.unidad_instancia:
+                unidad = self.unidad_instancia
+                unidad.numero_serie = self.cleaned_data['numero_serie']
+                unidad.estado = self.cleaned_data['estado']
+                unidad.horas_uso = self.cleaned_data['horas_uso']
+                unidad.fecha_adquisicion = self.cleaned_data['fecha_adquisicion']
+                unidad.anio_fabricacion = self.cleaned_data['anio_fabricacion']
+                unidad.ubicacion_actual = self.cleaned_data['ubicacion_actual']
+                unidad.save()
+            else:
+                unidad = Unidad.objects.create(
+                    maquinaria=maquinaria,
+                    numero_serie=self.cleaned_data['numero_serie'],
+                    estado=self.cleaned_data['estado'],
+                    horas_uso=self.cleaned_data['horas_uso'],
+                    fecha_adquisicion=self.cleaned_data['fecha_adquisicion'],
+                    anio_fabricacion=self.cleaned_data['anio_fabricacion'],
+                    ubicacion_actual=self.cleaned_data['ubicacion_actual']
+                )
+        return maquinaria
 
 class CategoriaForm(forms.ModelForm):
     class Meta:
@@ -8,27 +97,4 @@ class CategoriaForm(forms.ModelForm):
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej. Grúas, Excavadoras, etc.'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Breve descripción de la categoría'}),
-        }
-
-
-class MaquinariaForm(forms.ModelForm):
-    class Meta:
-        model = Maquinaria
-        fields = [
-            'categoria', 'codigo', 'nombre', 'marca', 'modelo',
-            'costo_adquisicion', 'tarifa_diaria', 'tarifa_semanal',
-            'tarifa_mensual', 'deposito_garantia', 'activo'
-        ]
-        widgets = {
-            'categoria': forms.Select(attrs={'class': 'form-select'}),
-            'codigo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej. GRU-001'}),
-            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre descriptivo del equipo'}),
-            'marca': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej. Caterpillar, Komatsu'}),
-            'modelo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej. 320D'}),
-            'costo_adquisicion': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'tarifa_diaria': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'tarifa_semanal': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'tarifa_mensual': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'deposito_garantia': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }

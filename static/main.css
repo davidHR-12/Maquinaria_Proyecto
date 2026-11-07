@@ -899,3 +899,367 @@
                 font-size: 1.65rem;
             }
         }
+
+        /* =========================================
+   MÓDULO DE TABLAS Y FILTROS - MAQUIRENT
+   ESTILOS AISLADOS PARA .mq-wrap
+========================================= */
+
+        .mq-wrap {
+            --mq-ink: #1f2a33;
+            --mq-steel: #5b6b77;
+            --mq-concrete: #eef0f1;
+            --mq-line: #d9dee2;
+            --mq-amber: #f2b705;
+            --mq-amber-dark: #c99700;
+            --mq-radius: 14px;
+
+            font-family: 'Barlow', system-ui, sans-serif;
+            color: var(--mq-ink);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem 4rem;
+        }
+
+        .mq-wrap h1,
+        .mq-wrap h2 {
+            font-family: 'Barlow Semi Condensed', 'Barlow', sans-serif;
+            font-weight: 700;
+            letter-spacing: -.01em;
+        }
+
+        /* ---------- Encabezado ---------- */
+
+        .mq-wrap .mq-head {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .mq-wrap .mq-head h1 {
+            font-size: clamp(1.9rem, 4vw, 2.6rem);
+            margin: 0 0 .25rem;
+        }
+
+        .mq-wrap .mq-head p {
+            color: var(--mq-steel);
+            font-size: 1.05rem;
+            margin: 0;
+        }
+
+        /* ---------- Botones ---------- */
+
+        .mq-wrap .mq-btn-primary {
+            background: var(--mq-amber);
+            border: 0;
+            color: var(--mq-ink);
+            font-weight: 700;
+            padding: .65rem 1.4rem;
+            border-radius: 10px;
+        }
+
+        .mq-wrap .mq-btn-primary:hover,
+        .mq-wrap .mq-btn-primary:focus {
+            background: var(--mq-amber-dark);
+            color: var(--mq-ink);
+        }
+
+        .mq-wrap .mq-btn-secondary {
+            border: 1px solid #c5ccd2;
+            background: #fff;
+            color: var(--mq-ink);
+            font-weight: 600;
+            padding: .65rem 1.2rem;
+            border-radius: 10px;
+        }
+
+        .mq-wrap .mq-btn-secondary:hover {
+            background: var(--mq-concrete);
+            color: var(--mq-ink);
+        }
+
+        /* ---------- Filtros ---------- */
+
+        .mq-wrap .mq-filters {
+            background: #fff;
+            border: 1px solid var(--mq-line);
+            border-radius: var(--mq-radius);
+            padding: 1.1rem 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .mq-wrap .form-label {
+            font-weight: 600;
+            font-size: .9rem;
+            margin-bottom: .35rem;
+        }
+
+        .mq-wrap .form-control,
+        .mq-wrap .form-select,
+        .mq-wrap .input-group-text {
+            border-color: #c5ccd2;
+            padding: .6rem .8rem;
+            min-height: 46px;
+        }
+
+        .mq-wrap .input-group-text {
+            background: var(--mq-concrete);
+            color: var(--mq-steel);
+        }
+
+        .mq-wrap .form-control:focus,
+        .mq-wrap .form-select:focus {
+            border-color: var(--mq-amber-dark);
+            box-shadow: 0 0 0 .25rem rgba(242, 183, 5, .28);
+        }
+
+        /* ---------- Resumen de resultados ---------- */
+
+        .mq-wrap .mq-summary {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: .5rem;
+            margin-bottom: .75rem;
+            color: var(--mq-steel);
+            font-weight: 500;
+        }
+
+        .mq-wrap .mq-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            background: var(--mq-concrete);
+            border-radius: 999px;
+            padding: .2rem .7rem;
+            font-size: .88rem;
+            color: var(--mq-ink);
+        }
+
+        /* ---------- Tabla ---------- */
+
+        .mq-wrap .mq-table-card {
+            background: #fff;
+            border: 1px solid var(--mq-line);
+            border-radius: var(--mq-radius);
+            overflow: hidden;
+        }
+
+        .mq-wrap .mq-table {
+            margin: 0;
+        }
+
+        .mq-wrap .mq-table thead th {
+            background: var(--mq-ink);
+            color: #fff;
+            font-weight: 600;
+            font-size: .88rem;
+            border: 0;
+            padding: .85rem 1rem;
+            white-space: nowrap;
+        }
+
+        .mq-wrap .mq-table tbody td {
+            padding: .95rem 1rem;
+            vertical-align: middle;
+            border-color: var(--mq-line);
+        }
+
+        .mq-wrap .mq-table tbody tr {
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+        .mq-wrap .mq-table tbody tr:hover {
+            background: #fffbea;
+        }
+
+        .mq-wrap .mq-code {
+            font-weight: 700;
+            background: var(--mq-concrete);
+            border-radius: 6px;
+            padding: .15rem .5rem;
+            font-size: .9rem;
+            white-space: nowrap;
+        }
+
+        .mq-wrap .mq-name {
+            font-weight: 600;
+            display: block;
+        }
+
+        .mq-wrap .mq-sub {
+            color: var(--mq-steel);
+            font-size: .85rem;
+        }
+
+        .mq-wrap .mq-serial {
+            font-variant-numeric: tabular-nums;
+            color: var(--mq-steel);
+        }
+
+        .mq-wrap .mq-place {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+        }
+
+        .mq-wrap .mq-place.is-empty {
+            color: #8a96a0;
+            font-style: italic;
+        }
+
+        .mq-wrap .mq-link {
+            color: var(--mq-ink);
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 2px solid var(--mq-amber);
+            white-space: nowrap;
+        }
+
+        .mq-wrap .mq-link:hover {
+            color: var(--mq-ink);
+            background: rgba(242, 183, 5, .25);
+        }
+
+        /* ---------- Estados ---------- */
+
+        .mq-wrap .mq-status {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            border-radius: 999px;
+            padding: .25rem .75rem;
+            font-size: .85rem;
+            font-weight: 600;
+            background: var(--mq-concrete);
+            color: var(--mq-ink);
+        }
+
+        .mq-wrap .mq-status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .mq-wrap .mq-status.is-ok {
+            background: #e3f4e8;
+            color: #1e7a3c;
+        }
+
+        .mq-wrap .mq-status.is-busy {
+            background: #e3eefb;
+            color: #1d5fa8;
+        }
+
+        .mq-wrap .mq-status.is-warn {
+            background: #fff3cd;
+            color: #8a6400;
+        }
+
+        .mq-wrap .mq-status.is-danger {
+            background: #fde4e1;
+            color: #b3261e;
+        }
+
+        /* ---------- Estado vacío ---------- */
+
+        .mq-wrap .mq-empty {
+            background: #fff;
+            border: 1px dashed #b9c2c9;
+            border-radius: var(--mq-radius);
+            text-align: center;
+            padding: 3.5rem 1.5rem;
+        }
+
+        .mq-wrap .mq-empty .mq-empty-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            background: var(--mq-ink);
+            color: var(--mq-amber);
+            font-size: 1.9rem;
+        }
+
+        .mq-wrap .mq-empty h2 {
+            font-size: 1.5rem;
+            margin-bottom: .35rem;
+        }
+
+        .mq-wrap .mq-empty p {
+            color: var(--mq-steel);
+            margin-bottom: 1.25rem;
+        }
+
+        /* ---------- Responsive: móvil ---------- */
+
+        @media (max-width: 767.98px) {
+
+            .mq-wrap .mq-table thead {
+                display: none;
+            }
+
+            .mq-wrap .mq-table,
+            .mq-wrap .mq-table tbody,
+            .mq-wrap .mq-table tr,
+            .mq-wrap .mq-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .mq-wrap .mq-table tbody tr {
+                padding: .9rem 1rem;
+                border-bottom: 1px solid var(--mq-line);
+            }
+
+            .mq-wrap .mq-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                gap: 1rem;
+                padding: .3rem 0;
+                border: 0;
+                text-align: right;
+            }
+
+            .mq-wrap .mq-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--mq-steel);
+                text-align: left;
+                flex-shrink: 0;
+            }
+
+            .mq-wrap .mq-table tbody td[data-label=""]::before {
+                display: none;
+            }
+
+            .mq-wrap .mq-table tbody td.mq-cell-actions {
+                justify-content: flex-end;
+                padding-top: .6rem;
+            }
+        }
+
+        /* Información del usuario en el sidebar */
+        .mq-sidebar-user .mq-user-info {
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .mq-sidebar-user .mq-user-info strong {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Bloqueo de scroll cuando se abre el menú móvil */
+        body.mq-lock {
+            overflow: hidden;
+        }

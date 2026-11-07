@@ -11,8 +11,9 @@
             <p class="text-secondary mb-0">Consulta y administra los equipos registrados en el sistema.</p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{% url 'inventario:categoria_crear' %}" class="btn btn-outline-secondary fw-semibold">
-                <i class="bi bi-folder-plus"></i> Nueva Categoría
+            <!-- Botón modificado: Ahora lleva a la lista de categorías -->
+            <a href="{% url 'inventario:categoria_lista' %}" class="btn btn-outline-secondary fw-semibold">
+                <i class="bi bi-tags"></i> Gestionar Categorías
             </a>
             <a href="{% url 'inventario:maquinaria_crear' %}" class="btn btn-warning fw-bold"
                 style="background-color: var(--mq-amber); border: none;">
@@ -36,24 +37,28 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for item in maquinarias %}
+                        {% for unidad in unidades %}
                         <tr>
-                            <td class="ps-4 fw-bold text-dark">{{ item.codigo }}</td>
+                            <td class="ps-4 fw-bold text-dark">{{ unidad.maquinaria.codigo }}</td>
                             <td>
-                                <div class="fw-bold">{{ item.nombre }}</div>
-                                <small class="text-muted">{{ item.marca }} {{ item.modelo }}</small>
+                                <div class="fw-bold">{{ unidad.maquinaria.nombre }}</div>
+                                <small class="text-muted">Serie: {{ unidad.numero_serie }} - {{ unidad.maquinaria.marca|default_if_none:"" }} {{ unidad.maquinaria.modelo|default_if_none:"" }}</small>
                             </td>
-                            <td><span class="badge bg-light text-dark border">{{ item.categoria.nombre }}</span></td>
-                            <td class="fw-semibold">${{ item.tarifa_diaria|floatformat:2 }}</td>
+                            <td><span class="badge bg-light text-dark border">{{ unidad.maquinaria.categoria.nombre }}</span></td>
+                            <td class="fw-semibold">${{ unidad.maquinaria.tarifa_diaria|floatformat:2 }}</td>
                             <td>
-                                {% if item.activo %}
-                                <span class="badge bg-success-subtle text-success">Activo</span>
+                                {% if unidad.estado == 'Disponible' %}
+                                <span class="badge bg-success-subtle text-success">Disponible</span>
+                                {% elif unidad.estado == 'Alquilado' %}
+                                <span class="badge bg-primary-subtle text-primary">Alquilado</span>
                                 {% else %}
-                                <span class="badge bg-danger-subtle text-danger">Inactivo</span>
+                                <span class="badge bg-warning-subtle text-warning">{{ unidad.estado }}</span>
                                 {% endif %}
                             </td>
                             <td class="text-end pe-4">
-                                <a href="#" class="btn btn-sm btn-light border"><i class="bi bi-eye"></i></a>
+                                {% if es_administrador or es_tercero %}
+                                <a href="{% url 'inventario:maquinaria_editar' unidad.id %}" class="btn btn-sm btn-light border" title="Editar"><i class="bi bi-pencil"></i></a>
+                                {% endif %}
                             </td>
                         </tr>
                         {% empty %}

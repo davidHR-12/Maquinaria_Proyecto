@@ -8,7 +8,10 @@ urlpatterns = [
     path('categorias/', views.CategoriaListaView.as_view(), name='categoria_lista'),
     path('categorias/nuevo/', views.CategoriaCrearView.as_view(), name='categoria_crear'),
     
-    # Maquinarias
+    # Maquinarias / Unidades
     path('maquinarias/', views.MaquinariaListaView.as_view(), name='maquinaria_lista'),
     path('maquinarias/nuevo/', views.MaquinariaCrearView.as_view(), name='maquinaria_crear'),
+    
+    # La nueva ruta para editar la unidad física y su maquinaria
+    path('maquinarias/editar/<int:unidad_id>/', views.MaquinariaEditarView.as_view(), name='maquinaria_editar'),
 ]

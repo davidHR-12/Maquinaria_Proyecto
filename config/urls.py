@@ -23,5 +23,6 @@ urlpatterns = [
     # Ruta temporal para la página de inicio (apuntando al index.html que creamos)
     path('', TemplateView.as_view(template_name='publico/index.html'), name='index'),
     # Rutas de la app cuentas (prefijo /cuentas/ o directamente en la raíz)
-    path('cuentas/', include('apps.cuentas.urls')),
+    path('auth/', include('apps.cuentas.urls')),
+    path('inventario/', include('apps.inventario.urls')),
 ]

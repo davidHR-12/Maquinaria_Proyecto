@@ -41,7 +41,8 @@
                 </ul>
                 <div class="d-flex gap-2">
                     {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}" class="btn mq-btn-primary btn-sm"><i class="bi bi-speedometer2"></i>
+                    <a href="{% url 'cuentas:dashboard' %}" class="btn mq-btn-primary btn-sm"><i
+                            class="bi bi-speedometer2"></i>
                         Panel</a>
                     {% else %}
                     <a href="{% url 'cuentas:login' %}" class="btn mq-btn-secondary btn-sm">Iniciar sesión</a>

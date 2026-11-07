@@ -1,0 +1,53 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Panel de Control | MaquiRent{% endblock %}
+{% block page_name %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="p-4 bg-white border rounded-4 shadow-sm">
+                <span class="text-muted small text-uppercase fw-bold">Bienvenido al sistema</span>
+                <h1 class="h3 fw-bold text-dark mt-1">Panel de Administración General</h1>
+                <p class="text-secondary mb-0">
+                    Desde aquí puedes supervisar el inventario de maquinaria pesada, contratos de alquiler, solicitudes
+                    y el mantenimiento de la flota.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjetas de Estadísticas / Accesos Rápidos -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="p-3 bg-white border rounded-4 shadow-sm h-100 border-start border-4 border-warning">
+                <div class="text-muted small fw-bold">INVENTARIO</div>
+                <div class="h4 fw-bold mt-1 mb-0">Maquinaria</div>
+                <small class="text-secondary">Gestión de flota y equipos</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 bg-white border rounded-4 shadow-sm h-100 border-start border-4 border-primary">
+                <div class="text-muted small fw-bold">OPERACIONES</div>
+                <div class="h4 fw-bold mt-1 mb-0">Alquileres</div>
+                <small class="text-secondary">Contratos y solicitudes</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 bg-white border rounded-4 shadow-sm h-100 border-start border-4 border-success">
+                <div class="text-muted small fw-bold">FINANZAS</div>
+                <div class="h4 fw-bold mt-1 mb-0">Ventas</div>
+                <small class="text-secondary">Presupuestos y facturación</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 bg-white border rounded-4 shadow-sm h-100 border-start border-4 border-danger">
+                <div class="text-muted small fw-bold">SOPORTE TÉCNICO</div>
+                <div class="h4 fw-bold mt-1 mb-0">Mantenimiento</div>
+                <small class="text-secondary">Revisiones y talleres</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

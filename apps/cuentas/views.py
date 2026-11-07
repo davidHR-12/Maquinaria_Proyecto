@@ -1,6 +1,7 @@
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
-from django.views.generic import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView,TemplateView
 from .forms import RegistroClienteForm
 from .models import UsuarioPersonalizado
 
@@ -14,8 +15,7 @@ class IniciarSesionView(LoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self):
-        # Redirige a la página principal o al panel según prefieras
-        return reverse_lazy('index')
+        return reverse_lazy('cuentas:dashboard')
 
 
 class RegistrarClienteView(CreateView):
@@ -31,3 +31,7 @@ class RegistrarClienteView(CreateView):
         # Evaluamos si la tabla de usuarios está completamente vacía
         context['es_primer_usuario'] = not UsuarioPersonalizado.objects.exists()
         return context
+
+class DashboardAdminView(LoginRequiredMixin, TemplateView):
+    template_name = 'dashboard/admin_index.html'
+    login_url = 'cuentas:login'

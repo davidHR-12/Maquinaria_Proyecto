@@ -1,0 +1,74 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Inventario de Maquinaria{% endblock %}
+{% block page_name %}Maquinaria Pesada{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold text-dark mb-1">Flota de Maquinaria</h1>
+            <p class="text-secondary mb-0">Consulta y administra los equipos registrados en el sistema.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'inventario:categoria_crear' %}" class="btn btn-outline-secondary fw-semibold">
+                <i class="bi bi-folder-plus"></i> Nueva Categoría
+            </a>
+            <a href="{% url 'inventario:maquinaria_crear' %}" class="btn btn-warning fw-bold"
+                style="background-color: var(--mq-amber); border: none;">
+                <i class="bi bi-plus-lg"></i> Registrar Maquinaria
+            </a>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase small">
+                        <tr>
+                            <th class="py-3 ps-4">Código</th>
+                            <th class="py-3">Equipo / Nombre</th>
+                            <th class="py-3">Categoría</th>
+                            <th class="py-3">Tarifa Diaria</th>
+                            <th class="py-3">Estado</th>
+                            <th class="py-3 text-end pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in maquinarias %}
+                        <tr>
+                            <td class="ps-4 fw-bold text-dark">{{ item.codigo }}</td>
+                            <td>
+                                <div class="fw-bold">{{ item.nombre }}</div>
+                                <small class="text-muted">{{ item.marca }} {{ item.modelo }}</small>
+                            </td>
+                            <td><span class="badge bg-light text-dark border">{{ item.categoria.nombre }}</span></td>
+                            <td class="fw-semibold">${{ item.tarifa_diaria|floatformat:2 }}</td>
+                            <td>
+                                {% if item.activo %}
+                                <span class="badge bg-success-subtle text-success">Activo</span>
+                                {% else %}
+                                <span class="badge bg-danger-subtle text-danger">Inactivo</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4">
+                                <a href="#" class="btn btn-sm btn-light border"><i class="bi bi-eye"></i></a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-truck-flatbed display-6 d-block mb-2 text-secondary"></i>
+                                No hay maquinarias registradas todavía. <a
+                                    href="{% url 'inventario:maquinaria_crear' %}">¡Registra la primera!</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

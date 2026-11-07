@@ -71,6 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'cuentas.models.contexto_panel',
             ],
         },
     },
@@ -104,6 +105,8 @@ DATABASES = {
     }
 }
 
+# Configuración del modelo de autenticación personalizado
+AUTH_USER_MODEL = 'cuentas.UsuarioPersonalizado'
 
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators

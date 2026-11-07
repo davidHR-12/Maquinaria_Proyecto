@@ -2,6 +2,7 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from .forms import RegistroClienteForm
+from .models import UsuarioPersonalizado
 
 class IniciarSesionView(LoginView):
     """
@@ -14,7 +15,7 @@ class IniciarSesionView(LoginView):
 
     def get_success_url(self):
         # Redirige a la página principal o al panel según prefieras
-        return reverse_lazy('inicio')
+        return reverse_lazy('index')
 
 
 class RegistrarClienteView(CreateView):
@@ -23,4 +24,10 @@ class RegistrarClienteView(CreateView):
     """
     form_class = RegistroClienteForm
     template_name = 'cuentas/registro.html'
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy('cuentas:login')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Evaluamos si la tabla de usuarios está completamente vacía
+        context['es_primer_usuario'] = not UsuarioPersonalizado.objects.exists()
+        return context

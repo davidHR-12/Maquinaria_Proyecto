@@ -21,7 +21,7 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Ruta temporal para la página de inicio (apuntando al index.html que creamos)
-    path('', TemplateView.as_view(template_name='publico/index.html'), name='inicio'),
+    path('', TemplateView.as_view(template_name='publico/index.html'), name='index'),
     # Rutas de la app cuentas (prefijo /cuentas/ o directamente en la raíz)
     path('cuentas/', include('apps.cuentas.urls')),
 ]

@@ -52,12 +52,21 @@ class RegistroClienteForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.rol = 'Cliente' # Asignamos por defecto el rol de cliente público
+        
+        # Comprobamos si es el primer usuario registrado en todo el sistema
+        if not UsuarioPersonalizado.objects.exists():
+            user.rol = 'Administrador'
+            user.is_staff = True
+            user.is_superuser = True
+        else:
+            user.rol = 'Cliente'
+            
         if commit:
             user.save()
-            # Creamos automáticamente su perfil asociado con la cédula validada
-            PerfilCliente.objects.create(
-                usuario=user,
-                cedula=self.cleaned_data.get('cedula')
-            )
+            # Solo creamos el PerfilCliente si es un usuario común (Cliente)
+            if user.rol == 'Cliente':
+                PerfilCliente.objects.create(
+                    usuario=user,
+                    cedula=self.cleaned_data.get('cedula')
+                )
         return user

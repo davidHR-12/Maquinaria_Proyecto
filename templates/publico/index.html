@@ -380,8 +380,8 @@
                         {% if user.is_authenticated %}
                         <a href="#" class="btn mq-btn-primary btn-lg">Ir a mi Panel</a>
                         {% else %}
-                        <a href="{% url 'registro' %}" class="btn mq-btn-primary btn-lg">Registrarse</a>
-                        <a href="{% url 'login' %}" class="btn mq-btn-ghost btn-lg">Iniciar sesión</a>
+                        <a href="{% url 'cuentas:registro' %}" class="btn mq-btn-primary btn-lg">Registrarse</a>
+                        <a href="{% url 'cuentas:login' %}" class="btn mq-btn-ghost btn-lg">Iniciar sesión</a>
                         {% endif %}
                     </div>
                 </div>

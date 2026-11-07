@@ -507,3 +507,395 @@
             outline: 3px solid var(--mq-amber-dark);
             outline-offset: 2px;
         }
+
+        /* ========== Auth (login / registro) ========== */
+
+        /* Shell de dos columnas */
+        .mq-shell {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 992px) {
+            .mq-shell {
+                grid-template-columns: 5fr 6fr;
+            }
+        }
+
+        /* Panel lateral izquierdo */
+        .mq-side {
+            display: none;
+            background: var(--mq-ink);
+            color: #fff;
+            padding: 3rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        @media (min-width: 992px) {
+            .mq-side {
+                display: flex;
+            }
+        }
+
+        .mq-side h2 {
+            font-size: clamp(2rem, 3.2vw, 2.9rem);
+            line-height: 1.05;
+            max-width: 22rem;
+        }
+
+        .mq-side p {
+            color: #b9c4cc;
+            font-size: 1.1rem;
+            max-width: 24rem;
+        }
+
+        .mq-side .mq-hazard {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 12px;
+            background: repeating-linear-gradient(-45deg, var(--mq-amber) 0 14px, var(--mq-ink) 14px 28px);
+        }
+
+        .mq-side .mq-brand {
+            color: #fff;
+        }
+
+        /* Área principal del formulario */
+        .mq-main {
+            display: grid;
+            place-items: center;
+            padding: 2rem 1rem;
+            background: var(--mq-concrete);
+            min-height: 100vh;
+        }
+
+        /* Ajuste para que la tarjeta de autenticación sea más ancha y soporte 2 columnas */
+        .mq-auth-card {
+            width: 100%;
+            max-width: 680px;
+            margin: 2rem auto;
+            background: #fff;
+            border-radius: var(--mq-radius);
+            border: 1px solid var(--mq-line);
+            padding: 2.5rem;
+        }
+
+        /* Estilo para los mensajes de alerta que abarcan todo el ancho en un grid de 2 columnas */
+        .mq-full-width {
+            grid-column: 1 / -1;
+        }
+
+        .mq-auth-card .mq-brand-mobile {
+            display: inline-flex;
+            margin-bottom: 1.5rem;
+        }
+
+        .mq-auth-card .mq-brand-mobile .mq-brand-mark {
+            background: var(--mq-ink);
+            color: var(--mq-amber);
+        }
+
+        @media (min-width: 992px) {
+            .mq-auth-card .mq-brand-mobile {
+                display: none;
+            }
+        }
+
+        .mq-auth-card h1 {
+            font-size: 2rem;
+            margin-bottom: .25rem;
+        }
+
+        .mq-auth-card .mq-sub {
+            color: var(--mq-steel);
+            margin-bottom: 1.6rem;
+        }
+
+        .mq-auth-card .form-label {
+            font-weight: 600;
+            font-size: .92rem;
+            margin-bottom: .35rem;
+        }
+
+        .mq-auth-card .form-control,
+        .mq-auth-card .form-select,
+        .mq-auth-card .input-group-text,
+        .mq-auth-card .btn-eye {
+            border-color: #c5ccd2;
+            padding: .65rem .85rem;
+            min-height: 48px;
+        }
+
+        .mq-auth-card .input-group-text {
+            background: var(--mq-concrete);
+            color: var(--mq-steel);
+        }
+
+        .mq-auth-card .btn-eye {
+            background: #fff;
+            color: var(--mq-steel);
+            border: 1px solid #c5ccd2;
+        }
+
+        .mq-auth-card .btn-eye:hover {
+            background: var(--mq-concrete);
+            color: var(--mq-ink);
+        }
+
+        .mq-auth-card .form-control:focus,
+        .mq-auth-card .form-select:focus {
+            border-color: var(--mq-amber-dark);
+            box-shadow: 0 0 0 .25rem rgba(242, 183, 5, .28);
+            position: relative;
+            z-index: 3;
+        }
+
+        .mq-auth-card .invalid-feedback {
+            font-size: .86rem;
+        }
+
+        .mq-auth-card .form-text {
+            font-size: .8rem;
+            color: var(--mq-steel);
+        }
+
+        .mq-auth-card .form-text ul {
+            margin: .35rem 0 0;
+            padding-left: 1.1rem;
+        }
+
+        .mq-auth-card .form-text li {
+            margin-bottom: .1rem;
+        }
+
+        /* Medidor de fortaleza de contraseña */
+        .mq-meter {
+            height: 6px;
+            background: var(--mq-concrete);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: .6rem;
+        }
+
+        .mq-meter>span {
+            display: block;
+            height: 100%;
+            width: 0;
+            border-radius: 999px;
+            transition: width .25s, background .25s;
+        }
+
+        .mq-meter-text {
+            font-size: .82rem;
+            margin-top: .3rem;
+            color: var(--mq-steel);
+            min-height: 1.1em;
+        }
+
+        /* Indicador de coincidencia / cédula */
+        .mq-match {
+            font-size: .85rem;
+            margin-top: .4rem;
+            min-height: 1.1em;
+        }
+
+        .mq-match.ok {
+            color: #1e7a3c;
+        }
+
+        .mq-match.bad {
+            color: #b3261e;
+        }
+
+        /* Botón primario en contexto auth (padding extendido) */
+        .mq-auth-card .mq-btn-primary {
+            padding: .8rem 1.4rem;
+            font-size: 1.05rem;
+        }
+
+        .mq-auth-card .mq-btn-primary:disabled {
+            background: var(--mq-amber);
+            color: var(--mq-ink);
+            opacity: .75;
+        }
+
+        /* Links de navegación entre páginas auth */
+        .mq-links {
+            font-size: .95rem;
+            color: var(--mq-steel);
+        }
+
+        .mq-links a {
+            color: var(--mq-ink);
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 2px solid var(--mq-amber);
+        }
+
+        .mq-links a:hover {
+            background: rgba(242, 183, 5, .25);
+        }
+
+        /* Enlace "Volver al inicio" */
+        .mq-back {
+            color: var(--mq-steel);
+            text-decoration: none;
+            font-size: .95rem;
+        }
+
+        .mq-back:hover {
+            color: var(--mq-ink);
+        }
+
+        /* d-flex de Bootstrap anula el atributo hidden; esto lo respeta */
+        #aviso-mayusculas[hidden] {
+            display: none !important;
+        }
+
+        /* =========================================
+   REGISTRO COMPACTO - MAQUIRENT
+========================================= */
+
+        /* Contenedor principal */
+        .mq-main {
+            padding: 1rem;
+        }
+
+        /* Tarjeta */
+        .mq-auth-card {
+            max-width: 720px;
+            padding: 1.7rem 2rem;
+            margin: .5rem auto;
+        }
+
+        /* Título */
+        .mq-auth-card h1 {
+            font-size: 1.8rem;
+            margin-bottom: .1rem;
+        }
+
+        .mq-auth-card .mq-sub {
+            font-size: .92rem;
+            margin-bottom: 1rem !important;
+        }
+
+        /* Campos */
+        .mq-auth-card .mq-field {
+            margin-bottom: .45rem;
+        }
+
+        .mq-auth-card .form-label {
+            font-size: .86rem;
+            margin-bottom: .2rem;
+        }
+
+        /* Inputs */
+        .mq-auth-card .form-control,
+        .mq-auth-card .form-select,
+        .mq-auth-card .input-group-text,
+        .mq-auth-card .btn-eye {
+            min-height: 40px;
+            padding: .4rem .7rem;
+            font-size: .9rem;
+        }
+
+        .mq-auth-card .input-group-text {
+            min-width: 38px;
+            justify-content: center;
+        }
+
+        /* Ayudas */
+        .mq-auth-card .form-text {
+            font-size: .74rem;
+            line-height: 1.3;
+            margin-top: .25rem;
+        }
+
+        /* Requisitos de contraseña desplegables */
+        .mq-password-help {
+            margin-top: .3rem;
+            font-size: .76rem;
+            color: var(--mq-steel);
+        }
+
+        .mq-password-help summary {
+            cursor: pointer;
+            color: var(--mq-amber-dark);
+            font-weight: 600;
+            width: fit-content;
+        }
+
+        .mq-password-help .form-text {
+            padding: .4rem .6rem;
+            background: var(--mq-concrete);
+            border-radius: 7px;
+            margin-top: .35rem;
+        }
+
+        .mq-password-help ul {
+            margin-bottom: 0;
+            padding-left: 1rem;
+        }
+
+        /* Medidor de contraseña */
+        .mq-meter {
+            height: 4px;
+            margin-top: .3rem;
+        }
+
+        .mq-meter-text {
+            font-size: .72rem;
+            min-height: .8rem;
+            margin-top: .1rem;
+        }
+
+        /* Alertas */
+        .mq-auth-card .alert {
+            margin-bottom: .8rem !important;
+            font-size: .8rem;
+        }
+
+        /* Botón */
+        .mq-auth-card .mq-btn-primary {
+            min-height: 43px;
+            padding: .55rem 1rem;
+            font-size: .95rem;
+            margin-top: .2rem;
+        }
+
+        /* Enlaces inferiores */
+        .mq-links {
+            margin-top: .9rem !important;
+            font-size: .86rem;
+        }
+
+        .mq-auth-card .text-center.mt-3 {
+            margin-top: .5rem !important;
+        }
+
+        .mq-back {
+            font-size: .85rem;
+        }
+
+        /* Tarjeta adaptable a móviles */
+        @media (max-width: 576px) {
+            .mq-main {
+                padding: .5rem;
+            }
+
+            .mq-auth-card {
+                padding: 1.3rem 1rem;
+                margin: .25rem auto;
+            }
+
+            .mq-auth-card h1 {
+                font-size: 1.65rem;
+            }
+        }

@@ -1,0 +1,509 @@
+        :root {
+            --mq-ink: #1f2a33;
+            --mq-steel: #5b6b77;
+            --mq-concrete: #eef0f1;
+            --mq-line: #d9dee2;
+            --mq-amber: #f2b705;
+            --mq-amber-dark: #c99700;
+            --mq-radius: 14px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Barlow', system-ui, sans-serif;
+            color: var(--mq-ink);
+            background: #fff;
+        }
+
+        h1,
+        h2,
+        h3,
+        .mq-brand-name {
+            font-family: 'Barlow Semi Condensed', 'Barlow', sans-serif;
+            font-weight: 700;
+            letter-spacing: -.01em;
+        }
+
+        section[id] {
+            scroll-margin-top: 72px;
+        }
+
+        .mq-muted {
+            color: var(--mq-steel);
+        }
+
+        /* ---------- Botones ---------- */
+        .mq-btn-primary {
+            background: var(--mq-amber);
+            border: 0;
+            color: var(--mq-ink);
+            font-weight: 700;
+            padding: .75rem 1.6rem;
+            border-radius: 10px;
+        }
+
+        .mq-btn-primary:hover,
+        .mq-btn-primary:focus {
+            background: var(--mq-amber-dark);
+            color: var(--mq-ink);
+        }
+
+        .mq-btn-secondary {
+            border: 1px solid #b9c2c9;
+            background: #fff;
+            color: var(--mq-ink);
+            font-weight: 600;
+            padding: .75rem 1.4rem;
+            border-radius: 10px;
+        }
+
+        .mq-btn-secondary:hover {
+            background: var(--mq-concrete);
+            color: var(--mq-ink);
+        }
+
+        .mq-btn-ghost {
+            border: 1px solid rgba(255, 255, 255, .4);
+            color: #fff;
+            font-weight: 600;
+            padding: .75rem 1.4rem;
+            border-radius: 10px;
+        }
+
+        .mq-btn-ghost:hover {
+            background: rgba(255, 255, 255, .1);
+            color: #fff;
+        }
+
+        /* ---------- Navegación ---------- */
+        .mq-nav {
+            background: rgba(255, 255, 255, .94);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--mq-line);
+        }
+
+        .mq-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: .6rem;
+            text-decoration: none;
+            color: var(--mq-ink);
+        }
+
+        .mq-brand-mark {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: var(--mq-ink);
+            color: var(--mq-amber);
+            font-size: 1.15rem;
+        }
+
+        .mq-brand-name {
+            font-size: 1.5rem;
+        }
+
+        .mq-nav .nav-link {
+            color: var(--mq-ink);
+            font-weight: 600;
+            padding: .5rem .9rem;
+            border-radius: 8px;
+        }
+
+        .mq-nav .nav-link:hover {
+            background: var(--mq-concrete);
+        }
+
+        .mq-nav .nav-link.active {
+            box-shadow: inset 0 -3px 0 var(--mq-amber);
+            border-radius: 0;
+        }
+
+        /* ---------- Hero ---------- */
+        .mq-hero {
+            background: var(--mq-concrete);
+            padding: 4rem 0 3.5rem;
+            overflow: hidden;
+        }
+
+        .mq-hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.2rem);
+            line-height: 1.02;
+            margin-bottom: 1.1rem;
+        }
+
+        .mq-hero .mq-lead {
+            font-size: 1.2rem;
+            color: var(--mq-steel);
+            max-width: 34rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .mq-stage {
+            background: #fff;
+            border: 1px solid var(--mq-line);
+            border-radius: 22px;
+            padding: 1.5rem 1rem .5rem;
+        }
+
+        .mq-stage svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Cinta de precaución */
+        .mq-hazard {
+            height: 12px;
+            background: repeating-linear-gradient(-45deg, var(--mq-amber) 0 14px, var(--mq-ink) 14px 28px);
+        }
+
+        /* Animaciones tractor */
+        .mq-tractor {
+            animation: mq-drive 1.8s cubic-bezier(.2, .7, .2, 1) both;
+        }
+
+        .mq-wheel {
+            transform-box: fill-box;
+            transform-origin: center;
+        }
+
+        .mq-wheel-rear {
+            animation: mq-spin-rear 1.8s cubic-bezier(.2, .7, .2, 1) both;
+        }
+
+        .mq-wheel-front {
+            animation: mq-spin-front 1.8s cubic-bezier(.2, .7, .2, 1) both;
+        }
+
+        @keyframes mq-drive {
+            from {
+                transform: translateX(-640px);
+            }
+
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes mq-spin-rear {
+            from {
+                transform: rotate(-386deg);
+            }
+
+            to {
+                transform: rotate(0);
+            }
+        }
+
+        @keyframes mq-spin-front {
+            from {
+                transform: rotate(-814deg);
+            }
+
+            to {
+                transform: rotate(0);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .mq-tractor,
+            .mq-wheel-rear,
+            .mq-wheel-front {
+                animation: none;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+
+        /* ---------- Secciones ---------- */
+        .mq-section {
+            padding: 5rem 0;
+        }
+
+        .mq-section-alt {
+            background: var(--mq-concrete);
+        }
+
+        .mq-section-head {
+            max-width: 40rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .mq-section-head h2 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            margin-bottom: .5rem;
+        }
+
+        .mq-section-head p {
+            color: var(--mq-steel);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .mq-card {
+            background: #fff;
+            border: 1px solid var(--mq-line);
+            border-radius: var(--mq-radius);
+            padding: 1.6rem;
+            height: 100%;
+        }
+
+        .mq-card h3 {
+            font-size: 1.35rem;
+            margin-bottom: .5rem;
+        }
+
+        .mq-card p {
+            color: var(--mq-steel);
+            margin: 0;
+        }
+
+        .mq-icon {
+            width: 46px;
+            height: 46px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: var(--mq-ink);
+            color: var(--mq-amber);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .mq-card-accent {
+            border-left: 5px solid var(--mq-amber);
+        }
+
+        /* Valores */
+        .mq-value {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .mq-value .mq-icon {
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .mq-value h3 {
+            font-size: 1.15rem;
+            margin: 0 0 .15rem;
+        }
+
+        .mq-value p {
+            color: var(--mq-steel);
+            margin: 0;
+        }
+
+        /* Catálogo */
+        .mq-cat {
+            display: flex;
+            flex-direction: column;
+            gap: .25rem;
+            text-decoration: none;
+            color: var(--mq-ink);
+            background: #fff;
+            border: 1px solid var(--mq-line);
+            border-radius: var(--mq-radius);
+            padding: 1.4rem;
+            height: 100%;
+            transition: border-color .15s, background .15s;
+        }
+
+        .mq-cat:hover {
+            border-color: var(--mq-amber-dark);
+            background: #fffbea;
+            color: var(--mq-ink);
+        }
+
+        .mq-cat .mq-icon {
+            margin-bottom: .75rem;
+        }
+
+        .mq-cat strong {
+            font-family: 'Barlow Semi Condensed', sans-serif;
+            font-size: 1.25rem;
+        }
+
+        .mq-cat span {
+            color: var(--mq-steel);
+            font-size: .95rem;
+        }
+
+        .mq-cat .mq-go {
+            margin-top: auto;
+            padding-top: .75rem;
+            font-weight: 600;
+            font-size: .92rem;
+        }
+
+        /* Soporte */
+        .mq-contact {
+            display: flex;
+            gap: .9rem;
+            align-items: center;
+            background: #fff;
+            border: 1px solid var(--mq-line);
+            border-radius: var(--mq-radius);
+            padding: 1rem 1.2rem;
+            text-decoration: none;
+            color: var(--mq-ink);
+        }
+
+        a.mq-contact:hover {
+            border-color: var(--mq-amber-dark);
+            background: #fffbea;
+            color: var(--mq-ink);
+        }
+
+        .mq-contact .mq-icon {
+            margin: 0;
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+        }
+
+        .mq-contact small {
+            display: block;
+            color: var(--mq-steel);
+        }
+
+        .mq-contact strong {
+            font-weight: 600;
+        }
+
+        .mq-faq .accordion-item {
+            border: 1px solid var(--mq-line);
+            border-radius: var(--mq-radius) !important;
+            overflow: hidden;
+            margin-bottom: .75rem;
+        }
+
+        .mq-faq .accordion-button {
+            font-weight: 600;
+            padding: 1.1rem 1.3rem;
+            background: #fff;
+            color: var(--mq-ink);
+            box-shadow: none;
+        }
+
+        .mq-faq .accordion-button:not(.collapsed) {
+            background: #fffbea;
+            color: var(--mq-ink);
+        }
+
+        .mq-faq .accordion-button:focus {
+            box-shadow: 0 0 0 .25rem rgba(242, 183, 5, .28);
+        }
+
+        .mq-faq .accordion-body {
+            color: var(--mq-steel);
+            padding: 0 1.3rem 1.2rem;
+            background: #fffbea;
+        }
+
+        /* Llamado final */
+        .mq-cta {
+            background: var(--mq-ink);
+            color: #fff;
+            padding: 4rem 0;
+        }
+
+        .mq-cta h2 {
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
+        }
+
+        .mq-cta p {
+            color: #b9c4cc;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        /* Pie */
+        .mq-footer {
+            background: #151d24;
+            color: #9aa7b0;
+            padding: 3rem 0 1.5rem;
+        }
+
+        .mq-footer h3 {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: .8rem;
+        }
+
+        .mq-footer a {
+            color: #9aa7b0;
+            text-decoration: none;
+        }
+
+        .mq-footer a:hover {
+            color: var(--mq-amber);
+        }
+
+        .mq-footer ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .mq-footer li {
+            margin-bottom: .45rem;
+        }
+
+        .mq-footer .mq-brand {
+            color: #fff;
+        }
+
+        .mq-footer-bottom {
+            border-top: 1px solid #28343d;
+            margin-top: 2rem;
+            padding-top: 1.2rem;
+            font-size: .9rem;
+        }
+
+        /* Volver arriba */
+        .mq-top {
+            position: fixed;
+            right: 1.25rem;
+            bottom: 1.25rem;
+            width: 48px;
+            height: 48px;
+            border: 0;
+            border-radius: 12px;
+            background: var(--mq-amber);
+            color: var(--mq-ink);
+            font-size: 1.3rem;
+            display: grid;
+            place-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: opacity .2s, transform .2s;
+            z-index: 1030;
+        }
+
+        .mq-top.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: none;
+        }
+
+        .mq-top:hover {
+            background: var(--mq-amber-dark);
+        }
+
+        :focus-visible {
+            outline: 3px solid var(--mq-amber-dark);
+            outline-offset: 2px;
+        }

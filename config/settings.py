@@ -42,11 +42,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Aplicaciones del sistema de maquinaria pesada
-    'cuentas',
-    'inventario',
-    'ventas',
-    'alquileres',
-    'mantenimiento',
+    'apps.cuentas',
+    'apps.inventario',
+    'apps.ventas',
+    'apps.alquileres',
+    'apps.mantenimiento',
 ]
 
 MIDDLEWARE = [
@@ -71,7 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'cuentas.models.contexto_panel',
+                'apps.cuentas.models.contexto_panel',
             ],
         },
     },
@@ -83,13 +83,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-'''DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-}'''
+}
 
+'''
+#Configuracion para SQL SERVER
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',
@@ -104,6 +106,7 @@ DATABASES = {
         },
     }
 }
+'''
 
 # Configuración del modelo de autenticación personalizado
 AUTH_USER_MODEL = 'cuentas.UsuarioPersonalizado'

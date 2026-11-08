@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
@@ -35,9 +36,18 @@ class Maquinaria(models.Model):
         verbose_name='Categoría'
     )
     codigo = models.CharField(max_length=20, unique=True, db_column='Codigo', verbose_name='Código')
-    nombre = models.CharField(max_length=120, db_column='Nombre', verbose_name='Nombre del equipo')
+    nombre = models.CharField(max_length=120, db_column='Nombre', verbose_name='Descripción')
+    descripcion = models.TextField(blank=True, default='', verbose_name='Detalles del equipo')
     marca = models.CharField(max_length=60, blank=True, null=True, db_column='Marca')
     modelo = models.CharField(max_length=60, blank=True, null=True, db_column='Modelo')
+    registrada_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='maquinarias_registradas',
+        verbose_name='Registrada por',
+    )
     costo_adquisicion = models.DecimalField(
         max_digits=18,
         decimal_places=2,
@@ -109,6 +119,44 @@ class Maquinaria(models.Model):
 
     def __str__(self):
         return f'{self.codigo} - {self.nombre}'
+
+
+class MaquinariaImagen(models.Model):
+    maquinaria = models.ForeignKey(
+        Maquinaria,
+        on_delete=models.CASCADE,
+        related_name='imagenes',
+        verbose_name='Maquinaria',
+    )
+    imagen = models.ImageField(upload_to='maquinaria/%Y/%m/')
+    texto_alternativo = models.CharField(max_length=160, blank=True)
+
+    class Meta:
+        verbose_name = 'imagen de maquinaria'
+        verbose_name_plural = 'imágenes de maquinaria'
+        ordering = ('id',)
+
+
+class MaquinariaComentario(models.Model):
+    maquinaria = models.ForeignKey(
+        Maquinaria,
+        on_delete=models.CASCADE,
+        related_name='comentarios',
+        verbose_name='Maquinaria',
+    )
+    cliente = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name='comentarios_maquinaria',
+        verbose_name='Cliente',
+    )
+    texto = models.TextField(max_length=1000)
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'comentario de maquinaria'
+        verbose_name_plural = 'comentarios de maquinaria'
+        ordering = ('-creado_en', '-id')
 
 
 class Unidad(models.Model):

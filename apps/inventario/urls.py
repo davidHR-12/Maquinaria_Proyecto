@@ -17,4 +17,5 @@ urlpatterns = [
     
     # Ruta para editar la unidad física y su maquinaria
     path('maquinarias/editar/<int:unidad_id>/', views.MaquinariaEditarView.as_view(), name='maquinaria_editar'),
+    path('maquinarias/eliminar/<int:unidad_id>/', views.MaquinariaEliminarView.as_view(), name='maquinaria_eliminar'),
 ]

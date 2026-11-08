@@ -1,12 +1,24 @@
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
-from .models import UsuarioPersonalizado, PerfilCliente
-from .validators import validar_cedula
+from .models import UsuarioPersonalizado
+
+
+class CorreoAuthenticationForm(AuthenticationForm):
+    username = forms.EmailField(
+        label='Correo electrónico',
+        widget=forms.EmailInput(attrs={
+            'autofocus': True,
+            'autocomplete': 'email',
+            'placeholder': 'nombre@correo.com',
+        }),
+    )
+
 
 class RegistroClienteForm(UserCreationForm):
     """
     Formulario de registro para nuevos clientes que captura correo, 
-    teléfono, nombre, apellido, cédula y contraseña.
+    teléfono, nombre, apellido y contraseña.
     """
     first_name = forms.CharField(
         label='Nombre',
@@ -31,24 +43,12 @@ class RegistroClienteForm(UserCreationForm):
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(809) 000-0000'})
     )
-    cedula = forms.CharField(
-        label='Cédula de identidad',
-        max_length=13,
-        required=True,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '000-0000000-0'})
-    )
-
     class Meta(UserCreationForm.Meta):
         model = UsuarioPersonalizado
         fields = ('first_name', 'last_name', 'email', 'telefono')
         widgets = {
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
         }
-
-    def clean_cedula(self):
-        cedula = self.cleaned_data.get('cedula')
-        # Validamos usando la función oficial dominicana
-        return validar_cedula(cedula)
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -63,10 +63,5 @@ class RegistroClienteForm(UserCreationForm):
             
         if commit:
             user.save()
-            # Solo creamos el PerfilCliente si es un usuario común (Cliente)
-            if user.rol == 'Cliente':
-                PerfilCliente.objects.create(
-                    usuario=user,
-                    cedula=self.cleaned_data.get('cedula')
-                )
+            self.save_m2m()
         return user

@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
-from .validators import validar_cedula
 
 class RolUsuario(models.TextChoices):
     ADMINISTRADOR = 'Administrador', 'Administrador'
@@ -89,6 +88,16 @@ class UsuarioPersonalizado(AbstractUser):
     def es_tercero(self):
         return self.rol == RolUsuario.TERCERO
 
+    @property
+    def puede_consultar_maquinaria(self):
+        return self.is_authenticated and self.is_active and (
+            self.es_administrador or self.es_cliente or self.es_tecnico
+        )
+
+    @property
+    def puede_registrar_maquinaria(self):
+        return self.puede_consultar_maquinaria and self.es_administrador
+
 
 class PerfilCliente(models.Model):
     """Datos de identidad específicos para los usuarios que actúan como clientes."""
@@ -99,13 +108,7 @@ class PerfilCliente(models.Model):
         related_name='perfil_cliente',
         db_column='UsuarioID'
     )
-    cedula = models.CharField(
-        'Cédula de identidad', 
-        max_length=13, 
-        unique=True,
-        validators=[validar_cedula],
-        db_column='Cedula'
-    )
+    
     creado_en = models.DateTimeField(auto_now_add=True, db_column='CreadoEn')
 
     class Meta:
@@ -113,17 +116,9 @@ class PerfilCliente(models.Model):
         verbose_name_plural = 'perfiles de clientes'
         db_table = 'PerfilCliente'
 
-    def clean(self):
-        super().clean()
-        if self.cedula:
-            self.cedula = validar_cedula(self.cedula)
-
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f'{self.usuario.get_full_name() or self.usuario.email} · {self.cedula}'
 
 
 class AutorizacionCliente(models.Model):
@@ -180,6 +175,8 @@ def permisos_panel(usuario):
     es_cli = usuario.es_cliente
     es_tec = usuario.es_tecnico
     es_ter = usuario.es_tercero
+    puede_consultar = usuario.puede_consultar_maquinaria
+    puede_registrar = usuario.puede_registrar_maquinaria
 
     return {
         'nombre_usuario': usuario.get_full_name() or usuario.email,
@@ -188,8 +185,8 @@ def permisos_panel(usuario):
         'es_cliente': es_cli,
         'es_tecnico': es_tec,
         'es_tercero': es_ter,
-        'puede_consultar_maquinaria': True,
-        'puede_registrar_maquinaria': es_admin or es_ter,
+        'puede_consultar_maquinaria': puede_consultar,
+        'puede_registrar_maquinaria': puede_registrar,
         'puede_gestionar_clientes': es_admin,
     }
 

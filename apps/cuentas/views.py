@@ -1,8 +1,10 @@
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.views.generic import CreateView,TemplateView
-from .forms import RegistroClienteForm
+from apps.inventario.models import Unidad
+from .forms import CorreoAuthenticationForm, RegistroClienteForm
 from .models import UsuarioPersonalizado
 
 class IniciarSesionView(LoginView):
@@ -12,6 +14,7 @@ class IniciarSesionView(LoginView):
     usando el correo electrónico.
     """
     template_name = 'cuentas/login.html'
+    authentication_form = CorreoAuthenticationForm
     redirect_authenticated_user = True
 
     def get_success_url(self):
@@ -35,3 +38,26 @@ class RegistrarClienteView(CreateView):
 class DashboardAdminView(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard/admin_index.html'
     login_url = 'cuentas:login'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        usuario = self.request.user
+        unidades = Unidad.objects.select_related(
+            'maquinaria__categoria',
+            'maquinaria__registrada_por',
+        ).prefetch_related('maquinaria__imagenes').filter(
+            activo=True,
+            estado='Disponible',
+            maquinaria__activo=True,
+        )
+
+        if usuario.es_administrador:
+            unidades = unidades.filter(
+                Q(maquinaria__registrada_por=usuario)
+                | Q(maquinaria__registrada_por__isnull=True)
+            )
+        elif not usuario.es_cliente:
+            unidades = unidades.none()
+
+        context['maquinarias_disponibles'] = unidades
+        return context

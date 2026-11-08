@@ -49,7 +49,7 @@
                 <div class="alert alert-danger alert-dismissible fade show d-flex gap-2 align-items-start py-2 small"
                     role="alert">
                     <i class="bi bi-exclamation-triangle-fill mt-1"></i>
-                    <div>Usuario o contraseña incorrectos. Inténtalo de nuevo.</div>
+                    <div>Correo electrónico o contraseña incorrectos. Inténtalo de nuevo.</div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
                 </div>
                 {% endif %}
@@ -61,9 +61,9 @@
                     {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
 
                     <div class="mb-3">
-                        <label for="{{ form.username.id_for_label }}" class="form-label">Usuario</label>
+                        <label for="{{ form.username.id_for_label }}" class="form-label">Correo electrónico</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                             {{ form.username }}
                         </div>
                         {% for error in form.username.errors %}
@@ -117,7 +117,7 @@
     <script>
         // Elementos que vamos a controlar
         const campoClave = document.getElementById('id_password');
-        const campoUser = document.getElementById('id_username');
+        const campoCorreo = document.getElementById('id_username');
         const botonOjo = document.getElementById('mostrar-clave');
         const iconoOjo = document.getElementById('icono-ojo');
         const avisoMayusculas = document.getElementById('aviso-mayusculas');
@@ -127,11 +127,12 @@
             campoClave.classList.add('form-control');
             campoClave.setAttribute('autocomplete', 'current-password');
         }
-        if (campoUser) {
-            campoUser.classList.add('form-control');
-            campoUser.setAttribute('autocomplete', 'username');
-            campoUser.setAttribute('placeholder', 'Tu usuario');
-            if (!document.querySelector('.invalid-feedback')) campoUser.focus();
+        if (campoCorreo) {
+            campoCorreo.classList.add('form-control');
+            campoCorreo.setAttribute('type', 'email');
+            campoCorreo.setAttribute('autocomplete', 'email');
+            campoCorreo.setAttribute('placeholder', 'nombre@correo.com');
+            if (!document.querySelector('.invalid-feedback')) campoCorreo.focus();
         }
 
         // Un clic muestra la contraseña; otro vuelve a ocultarla

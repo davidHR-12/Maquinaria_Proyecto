@@ -70,13 +70,14 @@ def solicitud_registrar(request, unidad_id):
 def solicitud_lista(request):
     """Bandeja de solicitudes. Los clientes ven las suyas; los administradores ven todas."""
     permisos = permisos_panel(request.user)
-    
+    if not (permisos.get('es_administrador') or permisos.get('es_cliente')):
+        raise PermissionDenied("No tienes autorización para consultar solicitudes.")
+
     solicitudes = SolicitudAlquiler.objects.select_related(
         'unidad__maquinaria', 'cliente', 'revisado_por'
     )
 
-    # Si es un cliente estándar, filtramos únicamente sus propias solicitudes
-    if not permisos.get('es_administrador') and not permisos.get('es_tecnico'):
+    if permisos.get('es_cliente'):
         solicitudes = solicitudes.filter(cliente=request.user)
 
     return render(request, 'alquileres/solicitud_lista.html', {'solicitudes': solicitudes})

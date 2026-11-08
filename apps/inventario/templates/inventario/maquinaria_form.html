@@ -23,7 +23,7 @@
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-body p-4 p-md-5">
             
-            <form method="post" novalidate>
+            <form method="post" enctype="multipart/form-data" novalidate>
                 {% csrf_token %}
 
                 {% if form.non_field_errors %}
@@ -70,6 +70,16 @@
                     {% endif %}
                 </div>
 
+                <div class="mb-4">
+                    <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-semibold small text-uppercase text-secondary">
+                        {{ form.descripcion.label }}
+                    </label>
+                    {{ form.descripcion }}
+                    {% if form.descripcion.errors %}
+                    <div class="invalid-feedback d-block small">{% for error in form.descripcion.errors %}{{ error }}{% endfor %}</div>
+                    {% endif %}
+                </div>
+
                 <!-- Fila 3: Marca y Modelo -->
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
@@ -91,6 +101,60 @@
                         {% endif %}
                     </div>
                 </div>
+
+                <hr class="my-4 text-muted opacity-25">
+                <h5 class="fw-bold mb-2 text-dark">Imágenes de la maquinaria</h5>
+                <p class="small text-secondary">Puedes cargar hasta 8 imágenes, de máximo 5 MB cada una.</p>
+                {{ imagenes_formset.management_form }}
+                {% if imagenes_formset.non_form_errors %}
+                <div class="alert alert-danger py-2 small" role="alert">
+                    {{ imagenes_formset.non_form_errors }}
+                </div>
+                {% endif %}
+                <div class="row g-3 mb-3" id="image-formset"
+                    data-formset-prefix="{{ imagenes_formset.prefix }}" data-max-num="8">
+                    {% for imagen_form in imagenes_formset %}
+                    <div class="col-md-6 image-form-row">
+                        <div class="border rounded-3 p-3 h-100">
+                            {% if imagen_form.instance.pk and imagen_form.instance.imagen %}
+                            <img src="{{ imagen_form.instance.imagen.url }}" alt="{{ imagen_form.instance.texto_alternativo|default:'Imagen actual de la maquinaria' }}" class="img-fluid rounded mb-3" style="max-height: 160px;">
+                            {% endif %}
+                            {{ imagen_form.id }}
+                            <label class="form-label fw-semibold" for="{{ imagen_form.imagen.id_for_label }}">Imagen</label>
+                            {{ imagen_form.imagen }}
+                            {% if imagen_form.imagen.errors %}
+                            <div class="text-danger small">{{ imagen_form.imagen.errors }}</div>
+                            {% endif %}
+                            <label class="form-label fw-semibold mt-3" for="{{ imagen_form.texto_alternativo.id_for_label }}">Descripción accesible (opcional)</label>
+                            {{ imagen_form.texto_alternativo }}
+                            {% if imagen_form.DELETE %}
+                            <div class="form-check mt-3">
+                                {{ imagen_form.DELETE }}
+                                <label class="form-check-label" for="{{ imagen_form.DELETE.id_for_label }}">Eliminar esta imagen</label>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <template id="empty-image-form">
+                    <div class="col-md-6 image-form-row">
+                        <div class="border rounded-3 p-3 h-100">
+                            {{ imagenes_formset.empty_form.id }}
+                            <label class="form-label fw-semibold" for="{{ imagenes_formset.empty_form.imagen.id_for_label }}">Imagen</label>
+                            {{ imagenes_formset.empty_form.imagen }}
+                            <label class="form-label fw-semibold mt-3" for="{{ imagenes_formset.empty_form.texto_alternativo.id_for_label }}">Descripción accesible (opcional)</label>
+                            {{ imagenes_formset.empty_form.texto_alternativo }}
+                            <div class="form-check mt-3">
+                                {{ imagenes_formset.empty_form.DELETE }}
+                                <label class="form-check-label" for="{{ imagenes_formset.empty_form.DELETE.id_for_label }}">Eliminar esta imagen</label>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <button type="button" class="btn btn-outline-secondary btn-sm mb-4" id="add-image-form">
+                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>Agregar otra imagen
+                </button>
 
                 <hr class="my-4 text-muted opacity-25">
                 <h5 class="fw-bold mb-3 text-dark">Información Financiera y Tarifas</h5>
@@ -220,26 +284,55 @@
                     </div>
                 </div>
 
-                <!-- Estado Activo -->
-                <div class="mb-4 form-check">
-                    {{ form.activo }}
-                    <label class="form-check-label fw-semibold text-dark" for="{{ form.activo.id_for_label }}">
-                        Equipo base activo y visible en catálogo general
-                    </label>
-                </div>
-
                 <!-- Botones de Acción -->
-                <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                <div class="d-flex justify-content-between gap-2 pt-3 border-top">
+                    {% if unidad %}
+                        <button type="submit" form="retirar-maquinaria" class="btn btn-outline-danger fw-semibold"
+                            onclick="return confirm('¿Retirar esta maquinaria del inventario? Sus registros se conservarán y podrá reactivarse con el mismo código.');">
+                            <i class="bi bi-trash"></i> Retirar del inventario
+                        </button>
+                    {% endif %}
+                    <div class="d-flex justify-content-end gap-2 ms-auto">
                     <a href="{% url 'inventario:maquinaria_lista' %}" class="btn btn-light border px-4 fw-semibold">Cancelar</a>
                     <button type="submit" class="btn fw-bold px-4 text-dark" style="background-color: var(--mq-amber);">
                         <i class="bi bi-check-lg"></i> Guardar Maquinaria
                     </button>
+                    </div>
                 </div>
 
             </form>
+            {% if unidad %}
+            <form id="retirar-maquinaria" method="post" action="{% url 'inventario:maquinaria_eliminar' unidad.id %}" class="d-none">
+                {% csrf_token %}
+            </form>
+            {% endif %}
 
         </div>
     </div>
 
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const container = document.getElementById('image-formset');
+        const addButton = document.getElementById('add-image-form');
+        const template = document.getElementById('empty-image-form');
+        if (!container || !addButton || !template) return;
+
+        const prefix = container.dataset.formsetPrefix;
+        const totalForms = document.getElementById(`id_${prefix}-TOTAL_FORMS`);
+        const maximum = Number(container.dataset.maxNum);
+        if (Number(totalForms.value) >= maximum) addButton.disabled = true;
+
+        addButton.addEventListener('click', function () {
+            const index = Number(totalForms.value);
+            if (index >= maximum) return;
+
+            const form = template.content.firstElementChild.cloneNode(true);
+            form.innerHTML = form.innerHTML.replace(/__prefix__/g, String(index));
+            container.appendChild(form);
+            totalForms.value = String(index + 1);
+            if (index + 1 >= maximum) addButton.disabled = true;
+        });
+    });
+</script>
 {% endblock %}

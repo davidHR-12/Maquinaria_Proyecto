@@ -120,6 +120,30 @@
             flex: 1;
             overflow-y: auto;
             padding: .5rem .85rem 1rem;
+            scrollbar-width: thin;
+            scrollbar-color: transparent transparent;
+        }
+
+        .mq-nav:hover {
+            scrollbar-color: var(--mq-steel) transparent;
+        }
+
+        .mq-nav::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .mq-nav::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .mq-nav::-webkit-scrollbar-thumb {
+            background: transparent;
+            border-radius: 4px;
+            transition: background .3s;
+        }
+
+        .mq-nav:hover::-webkit-scrollbar-thumb {
+            background: var(--mq-steel);
         }
 
         .mq-nav-link {
@@ -325,6 +349,7 @@
         }
     </style>
     {% block extra_css %}{% endblock %}
+    
 </head>
 
 <body>
@@ -343,19 +368,23 @@
                 <!-- Enlace Inicio / Dashboard dinámico -->
                 <a href="{% url 'cuentas:dashboard' %}" class="mq-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
                     <i class="bi bi-house-door"></i>
-                    <span>Inicio / Dashboard</span>
+                    <span>Inicio</span>
                 </a>
 
                 <div class="mq-nav-group">Gestión de Negocio</div>
 
+                {% if puede_consultar_maquinaria %}
                 <a href="{% url 'inventario:maquinaria_lista' %}" class="mq-nav-link {% if 'maquinaria' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="bi bi-gear-wide-connected"></i>
                     <span>Maquinarias</span>
                 </a>
-                <a href="#" class="mq-nav-link">
+                {% endif %}
+                {% if es_administrador or es_cliente %}
+                <a href="{% url 'alquileres:solicitud_lista' %}" class="mq-nav-link {% if request.resolver_match.namespace == 'alquileres' %}active{% endif %}">
                     <i class="bi bi-file-earmark-text"></i>
-                    <span>Alquileres</span>
+                    <span>Solicitudes de alquiler</span>
                 </a>
+                {% endif %}
                 <a href="#" class="mq-nav-link">
                     <i class="bi bi-cart-check"></i>
                     <span>Ventas y Presupuestos</span>
@@ -364,6 +393,12 @@
                     <i class="bi bi-tools"></i>
                     <span>Mantenimiento</span>
                 </a>
+                {% if request.user.is_superuser %}
+                <a href="{% url 'reportes:indice' %}" class="mq-nav-link {% if request.resolver_match.namespace == 'reportes' %}active{% endif %}">
+                    <i class="bi bi-graph-up"></i>
+                    <span>Reportes</span>
+                </a>
+                {% endif %}
                 <a href="#" class="mq-nav-link">
                     <i class="bi bi-people"></i>
                     <span>Cuentas y Usuarios</span>
@@ -426,8 +461,8 @@
             </main>
 
             <footer class="mq-footer">
-                <span>© {% now "Y" %> MaquiRent. Todos los derechos reservados.</span>
-                <span>Sistema de Gestión de Maquinaria Pesada</span>
+                <span>© A&J - MaquiRent. Todos los derechos reservados.</span>
+                <span>Gestión de Maquinaria Pesada</span>
             </footer>
         </div>
     </div>
